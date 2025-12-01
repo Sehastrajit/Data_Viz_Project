@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Space Exploration – Team Scrollytelling</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      font-family: Arial, sans-serif;
+      color: #222;
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      margin: 0;
+      color: #555;
+    }
+
+    /* Group titles */
+    .group-title {
+      font-size: 1.4rem;
+      margin-top: 50px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 6px;
+    }
+
+    .group-title.for {
+      color: #0b7a3b;
+      border-color: #b9e8c9;
+    }
+
+    .group-title.against {
+      color: #b2102f;
+      border-color: #f4c7ce;
+    }
+
+    /* Section layout */
+    section {
+      padding: 28px 0;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    section:last-child {
+      border-bottom: none;
+    }
+
+    h2 {
+      margin: 0 0 6px;
+      font-size: 1.5rem;
+    }
+
+    p {
+      margin: 6px 0 10px;
+      color: #555;
+    }
+
+    /* Viz containers */
+    .viz-frame {
+      margin-top: 12px;
+      border: 1px solid #ddd;
+      background: #000; /* charts are likely dark-themed */
+      overflow: hidden;
+      border-radius: 4px;
+    }
+
+    .viz-frame iframe {
+      width: 100%;
+      height: 480px;
+      border: none;
+      display: block;
+    }
+
+    .viz-caption {
+      font-size: 0.8rem;
+      color: #777;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 700px) {
+      .page {
+        padding: 24px 14px 40px;
+      }
+      .viz-frame iframe {
+        height: 360px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- TITLE -->
+    <header>
+      <h1>Space Exploration – Team Scrollytelling</h1>
+      <p>Each team member has two sections, each loading its own HTML visualization.</p>
+    </header>
+
+    <!-- ========================= -->
+    <!-- FOR TEAM -->
+    <!-- ========================= -->
+
+    <div class="group-title for">FOR — Supporting Space Exploration</div>
+
+    <!-- ARYAN -->
+    <section id="aryan-sec1">
+      <h2>Aryan — Section 1</h2>
+      <p>First “For” argument and visualization by Aryan.</p>
+      <div class="viz-frame">
+        <iframe src="aryan1.html" title="Aryan Section 1"></iframe>
+      </div>
+      <div class="viz-caption">Loads: <code>aryan1.html</code></div>
+    </section>
+
+    <section id="aryan-sec2">
+      <h2>Aryan — Section 2</h2>
+      <p>Second “For” argument and visualization by Aryan.</p>
+      <div class="viz-frame">
+        <iframe src="aryan2.html" title="Aryan Section 2"></iframe>
+      </div>
+      <div class="viz-caption">Loads: <code>aryan2.html</code></div>
+    </section>
+
+    <!-- MANYA -->
+    <section id="manya-sec1">
+      <h2>Manya — Section 1</h2>
+      <p>First “For” argument and visualization by Manya.</p>
+      <div class="viz-frame">
+        <iframe src="manya1.html" title="Manya Section 1"></iframe>
+      </div>
+      <div class="viz-caption">Loads: <code>manya1.html</code></div>
+    </section>
+
+    <section id="manya-sec2">
+      <h2>Manya — Section 2</h2>
+      <p>Second “For” argument and visualization by Manya.</p>
+      <div class="viz-frame">
+        <iframe src="manya2.html" title="Manya Section 2"></iframe>
+      </div>
+      <div class="viz-caption">Loads: <code>manya2.html</code></div>
+    </section>
+
+    <!-- VIVEK -->
+    <section id="vivek-sec1">
+      <h2>Vivek — Section 1</h2>
+      <p>First “For” argument and visualization by Vivek.</p>
+      <div class="viz-frame">
+        <iframe src="vivek1.html" title="Vivek Section 1"></iframe>
+      </div>
+      <div class="viz-caption">Loads: <code>vivek1.html</code></div>
+    </section>
+
+    <section id="vivek-sec2">
+      <h2>Vivek — Section 2</h2>
+      <p>Second “For” argument and visualization by Vivek.</p>
+      <div class="viz-frame">
+        <iframe src="vivek2.html" title="Vivek Section 2"></iframe>
+      </div>
+      <div class="viz-caption">Loads: <code>vivek2.html</code></div>
+    </section>
+
+    <!-- ========================= -->
+    <!-- AGAINST TEAM -->
+    <!-- ========================= -->
+
+    <div class="group-title against">AGAINST — Criticisms & Drawbacks</div>
+
+    <!-- SEHAS -->
+    <section id="sehas-sec1">
+      <h2>Sehas — Section 1</h2>
+      <p>First “Against” argument and visualization by Sehas.</p>
+      <div class="viz-frame">
+        <iframe src="sehas1.html" title="Sehas Section 1"></iframe>
+      </div>
+      <div class="viz-caption">Loads: <code>sehas1.html</code></div>
+    </section>
+
+    <section id="sehas-sec2">
+      <h2>Sehas — Section 2</h2>
+      <p>Second “Against” argument and visualization by Sehas.</p>
+      <div class="viz-frame">
+        <iframe src="sehas2.html" title="Sehas Section 2"></iframe>
+      </div>
+      <div class="viz-caption">Loads: <code>sehas2.html</code></div>
+    </section>
+
+    <!-- SAMYOGITA -->
+    <section id="samyogita-sec1">
+      <h2>Samyogita — Section 1</h2>
+      <p>First “Against” argument and visualization by Samyogita.</p>
+      <div class="viz-frame">
+        <iframe src="samyogita1.html" title="Samyogita Section 1"></iframe>
+      </div>
+      <div class="viz-caption">Loads: <code>samyogita1.html</code></div>
+    </section>
+
+    <section id="samyogita-sec2">
+      <h2>Samyogita — Section 2</h2>
+      <p>Second “Against” argument and visualization by Samyogita.</p>
+      <div class="viz-frame">
+        <iframe src="samyogita2.html" title="Samyogita Section 2"></iframe>
+      </div>
+      <div class="viz-caption">Loads: <code>samyogita2.html</code></div>
+    </section>
+
+    <!-- razan -->
+    <section id="razan-sec1">
+      <h2>Razan — Section 1</h2>
+      <p>First “Against” argument and visualization by razan.</p>
+      <div class="viz-frame">
+        <iframe src="razan1.html" title="razan Section 1"></iframe>
+      </div>
+      <div class="viz-caption">Loads: <code>razan1.html</code></div>
+    </section>
+
+    <section id="razan-sec2">
+      <h2>Razan — Section 2</h2>
+      <p>Second “Against” argument and visualization by razan.</p>
+      <div class="viz-frame">
+        <iframe src="razan2.html" title="razan Section 2"></iframe>
+      </div>
+      <div class="viz-caption">Loads: <code>razan2.html</code></div>
+    </section>
+
+  </div>
+</body>
+</html>
