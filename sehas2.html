@@ -10,7 +10,7 @@
             margin: 0;
             padding: 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0a0e27;
+            background: #000000;          /* FULL BLACK */
             color: #ffffff;
         }
         #container {
@@ -29,13 +29,13 @@
             margin-bottom: 30px;
         }
         #chart {
-            background: #0a0e27;
+            background: #000000;          /* FULL BLACK */
             border: 1px solid #333;
             border-radius: 8px;
         }
         .grid line {
             stroke: #ffffff;
-            stroke-opacity: 0.15;
+            stroke-opacity: 0.12;
             stroke-dasharray: 3,3;
         }
         .grid path {
@@ -45,21 +45,51 @@
             font-size: 13px;
             fill: #ffffff;
         }
+
+        /* ==== BUBBLE STYLING + ANIMATIONS ==== */
         .mission-bubble {
             fill: none;
             stroke: white;
             stroke-width: 2;
             opacity: 0.95;
+            transform-box: fill-box;
+            transform-origin: center;
+            transition: stroke-width 0.25s ease, stroke 0.25s ease, opacity 0.25s ease, transform 0.3s ease;
+        }
+        .mission-bubble.pulse {
+            animation: bubblePulse 4s ease-in-out infinite;
         }
         .mission-bubble:hover {
             stroke: #4fc3f7;
             stroke-width: 3;
             opacity: 1;
+            transform: scale(1.06);
         }
+        .mission-bubble.dimmed {
+            opacity: 0.18;
+        }
+        .mission-bubble.active {
+            stroke: #4fc3f7;
+            stroke-width: 4;
+            animation: bubblePulseActive 2.8s ease-in-out infinite;
+        }
+
+        @keyframes bubblePulse {
+            0%   { transform: scale(1); }
+            50%  { transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+        @keyframes bubblePulseActive {
+            0%   { transform: scale(1); }
+            50%  { transform: scale(1.09); }
+            100% { transform: scale(1); }
+        }
+
         .flag-circle {
             stroke: white;
             stroke-width: 1;
             cursor: pointer;
+            fill: #000000;  /* black circle background */
         }
         .flag-circle:hover {
             stroke: #ffd700;
@@ -80,7 +110,7 @@
         }
         .tooltip {
             position: absolute;
-            background: rgba(20, 20, 40, 0.95);
+            background: rgba(0, 0, 0, 0.95);
             border: 1px solid #4fc3f7;
             border-radius: 4px;
             padding: 10px;
@@ -89,11 +119,12 @@
             opacity: 0;
             transition: opacity 0.2s;
             max-width: 250px;
+            color: #fff;
         }
         #legend {
             margin-top: 30px;
             padding: 20px;
-            background: rgba(255,255,255,0.05);
+            background: rgba(0,0,0,0.7);
             border-radius: 8px;
         }
         #legend h3 {
@@ -114,7 +145,7 @@
         .upload-section {
             margin-bottom: 20px;
             padding: 15px;
-            background: rgba(255,255,255,0.05);
+            background: rgba(0,0,0,0.7);
             border-radius: 8px;
             text-align: center;
         }
@@ -151,7 +182,6 @@
         const INNER_HOLE_FRAC = 0.32;
         const GOLDEN_ANGLE = 137.508 * Math.PI / 180;
 
-        // Country to flag emoji mapping (fallback for missing images)
         const FLAG_EMOJIS = {
             "United States": "🇺🇸",
             "Russian Federation": "🇷🇺",
@@ -241,7 +271,6 @@
         }
 
         function drawChart(missions) {
-            const container = d3.select('#container');
             const width = Math.max(1200, missions.length * 100);
             const height = 700;
             const margin = {top: 40, right: 60, bottom: 60, left: 80};
@@ -314,6 +343,13 @@
 
             const tooltip = d3.select('.tooltip');
 
+            // ==== INTERACTION: Highlight on click ====
+            function resetHighlight() {
+                d3.selectAll('.mission-bubble')
+                    .classed('active', false)
+                    .classed('dimmed', false);
+            }
+
             // Draw missions
             missions.forEach(mission => {
                 const cx = xScale(mission.year);
@@ -323,12 +359,20 @@
                 const missionGroup = g.append('g')
                     .attr('class', 'mission-group');
 
-                // Outer bubble
-                missionGroup.append('circle')
-                    .attr('class', 'mission-bubble')
+                // Outer bubble with pulse animation
+                const bubble = missionGroup.append('circle')
+                    .attr('class', 'mission-bubble pulse')
                     .attr('cx', cx)
                     .attr('cy', cy)
-                    .attr('r', R)
+                    .attr('r', 0); // start from 0 for entry animation
+
+                // Entry animation: grow from 0 to R
+                bubble.transition()
+                    .duration(900)
+                    .ease(d3.easeCubicOut)
+                    .attr('r', R);
+
+                bubble
                     .on('mouseover', function(event) {
                         tooltip.style('opacity', 1)
                             .html(`
@@ -339,23 +383,38 @@
                             `);
                     })
                     .on('mousemove', function(event) {
-                        tooltip.style('left', (event.pageX + 15) + 'px')
+                        tooltip
+                            .style('left', (event.pageX + 15) + 'px')
                             .style('top', (event.pageY - 15) + 'px');
                     })
                     .on('mouseout', function() {
                         tooltip.style('opacity', 0);
+                    })
+                    .on('click', function() {
+                        const alreadyActive = d3.select(this).classed('active');
+                        if (alreadyActive) {
+                            // reset if same bubble clicked again
+                            resetHighlight();
+                        } else {
+                            d3.selectAll('.mission-bubble')
+                                .classed('active', false)
+                                .classed('dimmed', true);
+                            d3.select(this)
+                                .classed('dimmed', false)
+                                .classed('active', true);
+                        }
                     });
 
-                // Inner flag circles
+                // Inner flag circles – fade in AFTER bubble load
                 const layout = innerCircleLayout(mission.countries.length, R, 6, INNER_HOLE_FRAC);
                 mission.countries.forEach((country, i) => {
                     const pos = layout[i];
                     const normalizedCountry = ALIASES[country] || country;
                     const flagPath = getFlagPath(country);
                     
-                    const flagGroup = missionGroup.append('g');
-                    
-                    // Create a clip path for the circle
+                    const flagGroup = missionGroup.append('g')
+                        .style('opacity', 0); // start invisible
+
                     const clipId = `clip-${mission.year}-${i}`;
                     missionGroup.append('defs')
                         .append('clipPath')
@@ -365,15 +424,13 @@
                         .attr('cy', cy + pos.y)
                         .attr('r', pos.r);
                     
-                    // Draw circle background
+                    // Circle background
                     flagGroup.append('circle')
                         .attr('class', 'flag-circle')
                         .attr('cx', cx + pos.x)
                         .attr('cy', cy + pos.y)
-                        .attr('r', pos.r)
-                        .attr('fill', '#1a1a2e');
+                        .attr('r', pos.r);
 
-                    // Try to load flag image
                     const flagImage = flagGroup.append('image')
                         .attr('x', cx + pos.x - pos.r)
                         .attr('y', cy + pos.y - pos.r)
@@ -384,7 +441,7 @@
                         .attr('preserveAspectRatio', 'xMidYMid slice')
                         .style('pointer-events', 'none');
 
-                    // Fallback to emoji if image fails to load
+                    // Fallback to emoji if image fails
                     flagImage.on('error', function() {
                         d3.select(this).remove();
                         const emoji = FLAG_EMOJIS[normalizedCountry] || '🌍';
@@ -397,7 +454,7 @@
                             .text(emoji);
                     });
 
-                    // Add hover circle on top
+                    // Hover halo for flags
                     flagGroup.append('circle')
                         .attr('cx', cx + pos.x)
                         .attr('cy', cy + pos.y)
@@ -412,13 +469,20 @@
                                 .html(`<strong>${normalizedCountry}</strong>`);
                         })
                         .on('mousemove', function(event) {
-                            tooltip.style('left', (event.pageX + 15) + 'px')
+                            tooltip
+                                .style('left', (event.pageX + 15) + 'px')
                                 .style('top', (event.pageY - 15) + 'px');
                         })
                         .on('mouseout', function() {
                             d3.select(this).attr('stroke', 'white').attr('stroke-width', 1);
                             tooltip.style('opacity', 0);
                         });
+
+                    // Fade the whole flag group in after bubble load
+                    flagGroup.transition()
+                        .delay(900)      // after bubble finishes radius animation
+                        .duration(600)
+                        .style('opacity', 1);
                 });
 
                 // Budget label (above)
@@ -426,14 +490,24 @@
                     .attr('class', 'budget-label')
                     .attr('x', cx)
                     .attr('y', cy - R - 8)
-                    .text(`${mission.budget.toFixed(1)} B$`);
+                    .style('opacity', 0)
+                    .text(`${mission.budget.toFixed(1)} B$`)
+                    .transition()
+                    .delay(500)
+                    .duration(700)
+                    .style('opacity', 1);
 
                 // Mission code (below)
                 g.append('text')
                     .attr('class', 'mission-code')
                     .attr('x', cx)
                     .attr('y', cy + R + 20)
-                    .text(mission.code);
+                    .style('opacity', 0)
+                    .text(mission.code)
+                    .transition()
+                    .delay(500)
+                    .duration(700)
+                    .style('opacity', 1);
             });
 
             // Update legend
@@ -443,6 +517,14 @@
                 legend.append('div')
                     .attr('class', 'legend-item')
                     .html(`<span class="code">${m.code}</span> → ${m.mission} (${m.year})`);
+            });
+
+            // Click background to reset highlight
+            svg.on('click', function(event) {
+                const target = event.target;
+                if (target.tagName.toLowerCase() === 'svg') {
+                    resetHighlight();
+                }
             });
         }
 
@@ -455,12 +537,18 @@
             .then(csvData => {
                 const missions = processData(csvData);
                 drawChart(missions);
-                d3.select('#status').text('✓ Data loaded successfully from Global_Space_Exploration_Dataset.csv').style('color', '#4fc3f7');
+                // Remove the success text: just clear the status
+                d3.select('#status')
+                    .text('')
+                    .style('color', '#4fc3f7');
             })
             .catch(error => {
                 console.error('Error loading CSV:', error);
-                d3.select('#status').text('✗ Could not find Global_Space_Exploration_Dataset.csv in the same folder').style('color', '#ff5252');
-                // Load sample data as fallback
+                d3.select('#status')
+                    .text('✗ Could not find Global_Space_Exploration_Dataset.csv in the same folder')
+                    .style('color', '#ff5252');
+
+                // Fallback sample data
                 const sampleData = `Year,Budget (in Billion $),Country,Collaborating Countries,Mission Name
 2015,3.5,United States,Europe,Mars Science Laboratory
 2016,4.2,United States,,James Webb Space Telescope
